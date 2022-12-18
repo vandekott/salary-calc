@@ -57,12 +57,12 @@
 
                 // ОПВ
                 let afterPension = this.percent(this.salary, this.pension);
-                    this.output.pension = afterPension['substructed'];
+                    this.output.pension = afterPension['substructed'].toFixed(3);
                     remains -= afterPension['substructed'];
 
                 // ОСМС
                 let afterMedicine = this.percent(this.salary, this.medicine);
-                    this.output.medicine = afterMedicine['substructed'];
+                    this.output.medicine = afterMedicine['substructed'].toFixed(3);
                     remains -= afterMedicine['substructed'];
 
                 // ИПН
@@ -70,10 +70,10 @@
                         remains - (this.mrp * this.mrp_count),
                         this.personal
                     );
+                    this.output.personal = afterPersonal['substructed'].toFixed(3);
                     remains -= afterPersonal['substructed'];
-                    this.output.personal = afterPersonal['substructed'];
 
-                this.output.remains = Math.round(remains);
+                this.output.remains = remains.toFixed(3);
             },
             percent(from, percent) {
                 return {
@@ -82,8 +82,6 @@
                     "result": from - (from * (0.01 * percent))
                 }
             }
-
-
         }
     </script>
 </body>
