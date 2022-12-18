@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор заработной платы РК</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="bg-yellow-200 min-h-screen w-full p-8">
+        <div x-data="calcSalary" class="flex flex-col p-6 space-y-4 rounded bg-gray-100 border border-gray-400 shadow-lg mx-auto" style="width: 600px;">
+            <h1 class="text-2xl">Калькулятор ЗП</h1>
+            <input x-on:input="calculate()" x-model="salary" class="block w-full border-8 border-black p-3 text-lg font-bold shadow-md focus:ring-1 focus:ring-yellow-400 border-yellow-400 sm:text-2xl" type="number">
+            <div>
+                <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                    <div class="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
+                      <dt class="text-sm font-medium text-gray-500 truncate">ОПВ</dt>
+                      <dd class="mt-1 text-3xl font-semibold text-gray-900" x-text="output.pension"></dd>
+                    </div>
+                
+                    <div class="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
+                      <dt class="text-sm font-medium text-gray-500 truncate">ОСМС</dt>
+                      <dd class="mt-1 text-3xl font-semibold text-gray-900" x-text="output.medicine"></dd>
+                    </div>
+                
+                    <div class="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
+                      <dt class="text-sm font-medium text-gray-500 truncate">ИПН</dt>
+                      <dd class="mt-1 text-3xl font-semibold text-gray-900" x-text="output.personal"></dd>
+                    </div>
+                
+                </dl>
+                <div class="mt-6 px-4 py-5 bg-yellow-200 border border-yellow-400 shadow rounded-lg overflow-hidden sm:p-6">
+                    <dt class="text-sm font-medium text-gray-500 truncate">ИТОГО</dt>
+                    <dd class="mt-1 text-3xl font-semibold text-gray-900" x-text="output.remains"></dd>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script>
+        const calcSalary = {
+            salary: 0,              // ЗП
+            pension: 10,            // ОПВ
+            medicine: 2,            // ОСМС
+            mrp: 3063,              // МРП (1 расчётный показатель)
+            mrp_count: 14,          // МЗП (в МРП)
+            personal: 10,           // ИПН
+            output: {
+                pension: 0,
+                medicine: 0,
+                personal: 0,
+                remains: 0
+            },
+            calculate() {
+                let remains = this.salary;
+
+                // ОПВ
+                let afterPension = this.percent(this.salary, this.pension);
+                    this.output.pension = afterPension['substructed'];
+                    remains -= afterPension['substructed'];
+
+                // ОСМС
+                let afterMedicine = this.percent(this.salary, this.medicine);
+                    this.output.medicine = afterMedicine['substructed'];
+                    remains -= afterMedicine['substructed'];
+
+                // ИПН
+                let afterPersonal = this.percent(
+                        remains - (this.mrp * this.mrp_count),
+                        this.personal
+                    );
+                    remains -= afterPersonal['substructed'];
+                    this.output.personal = afterPersonal['substructed'];
+
+                this.output.remains = Math.round(remains);
+            },
+            percent(from, percent) {
+                return {
+                    "from": from,
+                    "substructed": from * (0.01 * percent),
+                    "result": from - (from * (0.01 * percent))
+                }
+            }
+
+
+        }
+    </script>
+</body>
+</html>
